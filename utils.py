@@ -3,8 +3,15 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.edge.service import Service
 from selenium.webdriver.edge.options import Options
 
+import time
+
+def waiting_counter(s: int) -> None:
+    for i in range(s):
+        print(f'waiting {s-i} seconds....')
+        time.sleep(1)
+
 class Scraper:
-    def __init__(self, login_data: dict, job_title: str, filename: str, hidden: bool = False, logs: bool = False) -> None:
+    def __init__(self, login_data: dict, job_title: str, filename: str, hidden: bool = False, logs: bool = False, default_sleep: int = 3) -> None:
         self.login_data =  login_data
         self.job_title = job_title
 
@@ -12,6 +19,8 @@ class Scraper:
         self.logs = logs
 
         self.filename = filename
+
+        self.sleep = default_sleep
 
         self.driver = self.setup_driver()
 
@@ -39,11 +48,31 @@ class Scraper:
         self.driver.find_element(By.CSS_SELECTOR, 'button.btn__primary--large.from__button--floating').click()
 
         print('logged in successfully!')
+        waiting_counter(self.sleep)
 
-    def get_titles(self) -> list:
+    def get_jobs(self) -> list:
+        self.driver.get(f'https://www.linkedin.com/jobs/search/?keywords={self.job_title}')
+        waiting_counter(self.sleep)
 
-        return []
+        job_descriptions = []
+        jobs = self.driver.find_elements(By.CSS_SELECTOR, 'ul.scaffold-layout__list-container > li')
+        
+        for job in jobs:
+            job.click()
+
+            description = self.driver.find_element(By.CSS_SELECTOR, 'article.jobs-description__container').text
+            if description != '':
+                job_descriptions.append(description)
+        
+        if len(job_descriptions) == 0:
+            print('there is no jobs with this title.')
+
+            return []
+
+        print(f'{len(job_descriptions)} were found!')
+        return job_descriptions
     
 
     def run(self) -> None:
         self.login()
+        jobs = self.get_jobs()
