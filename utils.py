@@ -12,6 +12,20 @@ def waiting_counter(s: int) -> None:
 
 class Scraper:
     def __init__(self, login_data: dict, job_title: str, filename: str, hidden: bool = False, logs: bool = False, default_sleep: int = 3) -> None:
+        '''
+            Parameters
+            login_data (dictionary): dictionary of username and password of linkedin account.
+            
+            job_title (string): the job title your're searching for.
+
+            filename (string): the name of the file to save data (without extension).
+
+            hidden (bool): show or hide the browser window while working (default is False).
+
+            logs (bool): display the logs and info of the scrapping process (default is False).
+
+            default_sleep (int): time in seconds of waiting time between jobs.
+        '''
         self.login_data =  login_data
         self.job_title = job_title
 
