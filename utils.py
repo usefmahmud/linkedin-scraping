@@ -1,7 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.edge.service import Service
-from selenium.webdriver.edge.options import Options
+from selenium.webdriver.edge import service, options
+from selenium.common.exceptions import NoSuchElementException 
 
 import time
 
@@ -25,8 +25,8 @@ class Scraper:
         self.driver = self.setup_driver()
 
     def setup_driver(self) -> webdriver.Edge:
-        edge_service = Service(executable_path='./driver/msedgedriver.exe')
-        edge_options = Options()
+        edge_service = service.Service(executable_path='./driver/msedgedriver.exe')
+        edge_options = options.Options()
         if self.hidden:
             edge_options.add_argument("--headless")
             edge_options.add_argument("--disable-gpu")
@@ -61,7 +61,11 @@ class Scraper:
         job_counter = 1
         for job in jobs:
             job.click()
-            title = job.find_element(By.CSS_SELECTOR, 'a strong').text
+            try:
+                title = job.find_element(By.CSS_SELECTOR, 'a strong').text
+            except NoSuchElementException:
+                break
+                # if there is no title so showd jobs are end
 
             description = self.driver.find_element(By.CSS_SELECTOR, 'article.jobs-description__container').text
             if description != '':
