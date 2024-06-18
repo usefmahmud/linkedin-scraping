@@ -58,12 +58,25 @@ class Scraper:
         job_descriptions = []
         jobs = self.driver.find_elements(By.CSS_SELECTOR, 'ul.scaffold-layout__list-container > li')
         
+        job_counter = 1
         for job in jobs:
             job.click()
+            title = job.find_element(By.CSS_SELECTOR, 'a strong').text
 
             description = self.driver.find_element(By.CSS_SELECTOR, 'article.jobs-description__container').text
             if description != '':
-                job_descriptions.append(description)
+                job_descriptions.append({
+                    "title": title,
+                    "description": description
+                })
+
+                self.logger(f'got job #{job_counter}')
+                job_counter += 1
+
+                continue
+            
+            self.logger(f'failed to get job #{job_counter}')
+            job_counter += 1
         
         if len(job_descriptions) == 0:
             self.logger('there is no jobs with this title.')
@@ -73,9 +86,11 @@ class Scraper:
         self.logger(f'{len(job_descriptions)} were found!')
         return job_descriptions
     
+    def save_data() -> None:
+        pass
+    
     def logger(msg: str) -> None:
         print(msg)
-    
 
     def run(self) -> None:
         self.login()
