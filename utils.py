@@ -34,7 +34,7 @@ class Scraper:
         if not self.logs:
             edge_options.add_argument("--log-level=3")
         
-        print('setup the driver successfully!')
+        self.logger('setup the driver successfully!')
 
         return webdriver.Edge(service=edge_service, options=edge_options)
 
@@ -47,11 +47,12 @@ class Scraper:
 
         self.driver.find_element(By.CSS_SELECTOR, 'button.btn__primary--large.from__button--floating').click()
 
-        print('logged in successfully!')
+        self.logger('logged in successfully!')
         waiting_counter(self.sleep)
 
     def get_jobs(self) -> list:
         self.driver.get(f'https://www.linkedin.com/jobs/search/?keywords={self.job_title}')
+        self.logger('got the jobs page.')
         waiting_counter(self.sleep)
 
         job_descriptions = []
@@ -65,12 +66,15 @@ class Scraper:
                 job_descriptions.append(description)
         
         if len(job_descriptions) == 0:
-            print('there is no jobs with this title.')
+            self.logger('there is no jobs with this title.')
 
             return []
 
-        print(f'{len(job_descriptions)} were found!')
+        self.logger(f'{len(job_descriptions)} were found!')
         return job_descriptions
+    
+    def logger(msg: str) -> None:
+        print(msg)
     
 
     def run(self) -> None:
