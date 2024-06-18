@@ -3,7 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.edge import service, options
 from selenium.common.exceptions import NoSuchElementException 
 
-import time
+import time, json
 
 def waiting_counter(s: int) -> None:
     for i in range(s):
@@ -19,6 +19,7 @@ class Scraper:
         self.logs = logs
 
         self.filename = filename
+        self.save_path = './data/'
 
         self.sleep = default_sleep
 
@@ -87,11 +88,19 @@ class Scraper:
 
             return []
 
-        self.logger(f'{len(job_descriptions)} were found!')
+        self.logger(f'{len(job_descriptions)} jobs were found!')
         return job_descriptions
     
-    def save_data() -> None:
-        pass
+    def save_data(self, data: list) -> None:
+        self.filename += '.json'
+        
+        try:
+            with open(self.save_path + self.filename, 'w') as file:
+                json.dump(data, file)
+            
+            self.logger(f'data was saved succesfully in {self.filename}')
+        except:
+            self.logger('an error has occurred.')
     
     def logger(self, msg: str) -> None:
         print(msg)
@@ -99,3 +108,5 @@ class Scraper:
     def run(self) -> None:
         self.login()
         jobs = self.get_jobs()
+        
+        self.save_data(jobs)
