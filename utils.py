@@ -89,7 +89,7 @@ class Scraper:
     def save_data() -> None:
         pass
     
-    def logger(msg: str) -> None:
+    def logger(self, msg: str) -> None:
         print(msg)
 
     def run(self) -> None:
